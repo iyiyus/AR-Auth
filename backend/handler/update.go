@@ -311,10 +311,17 @@ func isGitHubRepositoryAPIURL(parsed *url.URL) bool {
 		updatePathHasPrefix(parsed, githubUpdateAPIRepoPath)
 }
 
+// updatePathEquals 忽略大小写判断 URL 路径是否等于目标路径（URL 路径可能保留仓库名的原始大小写）。
+func updatePathEquals(parsed *url.URL, path string) bool {
+	if parsed == nil {
+		return false
+	}
+	return strings.TrimSuffix(strings.ToLower(parsed.EscapedPath()), "/") == strings.TrimSuffix(strings.ToLower(path), "/")
+}
+
 // isGitHubLatestReleaseAPIURL 判断是否为「最新发布版」接口地址。
 func isGitHubLatestReleaseAPIURL(parsed *url.URL) bool {
-	return isGitHubRepositoryAPIURL(parsed) &&
-		strings.TrimSuffix(strings.ToLower(parsed.EscapedPath()), "/") == strings.TrimSuffix(githubUpdateAPILatestReleases, "/")
+	return isGitHubRepositoryAPIURL(parsed) && updatePathEquals(parsed, githubUpdateAPILatestReleases)
 }
 
 // isGitHubReleaseAssetHost GitHub 资产下载会重定向到专用对象存储域名。
@@ -344,8 +351,7 @@ func isGiteeRepositoryAPIURL(parsed *url.URL) bool {
 }
 
 func isGiteeLatestReleaseAPIURL(parsed *url.URL) bool {
-	return isGiteeRepositoryAPIURL(parsed) &&
-		strings.TrimSuffix(strings.ToLower(parsed.EscapedPath()), "/") == strings.TrimSuffix(giteeUpdateAPIReleasesPath, "/")+"/latest"
+	return isGiteeRepositoryAPIURL(parsed) && updatePathEquals(parsed, giteeUpdateAPIReleasesPath+"latest")
 }
 
 func isGiteeRepositoryUpdateURL(parsed *url.URL) bool {

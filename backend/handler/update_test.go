@@ -214,6 +214,26 @@ func TestFetchGitHubLatestManifestURL(t *testing.T) {
 	}
 }
 
+func TestIsUpdateURLCaseInsensitive(t *testing.T) {
+	githubLatest, err := parseOnlineUpdateURL("https://api.github.com/repos/iyiyus/AR-Auth/releases/latest")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !isGitHubLatestReleaseAPIURL(githubLatest) {
+		t.Fatal("latest release API URL with mixed-case repository name was rejected")
+	}
+	if !isGitHubRepositoryAPIURL(githubLatest) {
+		t.Fatal("releases API URL with mixed-case repository name was rejected")
+	}
+	githubAsset, err := parseOnlineUpdateURL("https://github.com/iyiyus/AR-Auth/releases/download/v1.1.3/latest.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !isGitHubRepositoryReleaseURL(githubAsset) {
+		t.Fatal("release asset URL with mixed-case repository name was rejected")
+	}
+}
+
 func TestParseOnlineUpdateVersionRejectsUnsafeValues(t *testing.T) {
 	for _, value := range []string{"1", "1.2", "1.2.3-beta", "release-1.2.3", "1/../../backend"} {
 		if _, ok := parseOnlineUpdateVersion(value); ok {

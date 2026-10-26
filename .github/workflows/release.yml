@@ -139,6 +139,8 @@ jobs:
           VERSION: ${{ steps.version.outputs.value }}
         run: |
           set -euo pipefail
+          # 同一 tag 重复发布时先移除已有 Release，保证重新构建可以覆盖旧资产
+          gh release delete "$RELEASE_TAG" --cleanup-tag=false --yes 2>/dev/null || true
           gh release create "$RELEASE_TAG" \
             "release/packages/auth_pro-full-v${VERSION}.tar.gz" \
             release/packages/latest.json \
