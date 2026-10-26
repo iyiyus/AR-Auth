@@ -1,0 +1,58 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+# Independently deployed mobile source and build output stay local.
+/h5/
+node_modules/
+
+# Backend runtime artifacts
+backend/auto_pro
+backend/auto_pro.exe
+backend/auto_pro.exe~
+backend/auto_pro_*
+backend/*.log
+backend/*.pid
+backend/db.json
+backend/install.lock
+backend/jwt.secret
+backend/updates/
+backend/software-source-cache/
+
+# Generated backend embedded static assets
+backend/static/*
+!backend/static/.gitkeep
+
+# Release packages
+release/
+
+# Local runtime markers
+*.log
+*.pid
+.kill-done
+.ports-status
+.restart-channel-check
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# AI assistant / local collaboration notes (kept local, not part of upstream PRs)
+/AGENTS.md
+
+# pnpm store cache
+.pnpm-store/
+.cache/
+
+# Local archives and stray assets at repo root only
+# (leading slash keeps frontend/ and backend/ resources tracked)
+/*.zip
+/*.tar.gz
+/*.tgz
+/*.png
+/*.jpg
+/*.jpeg
+
+# Local build output
+build-output.txt

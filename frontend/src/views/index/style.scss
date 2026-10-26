@@ -1,0 +1,108 @@
+.app-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background: var(--default-bg-color);
+
+  #app-sidebar {
+    // 侧边栏铺满视口高度并固定在顶部，不随内容区滚动移动
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    flex-shrink: 0;
+    height: 100vh;
+  }
+
+  #app-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 100vh; // 移动端（≤800px 改为 height: auto）短页面时撑满视口
+    height: 100dvh; // 内容区自身作为滚动容器（锁定视口高度），顶栏 sticky 才能在内部滚动时保持固定
+    overflow: auto;
+
+    #app-header {
+      // 顶栏固定：内容区内部滚动时保持钉在顶部，与左侧菜单栏一致
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      flex-shrink: 0;
+      width: 100%;
+    }
+
+    #app-content {
+      flex: 1;
+
+      :deep(.layout-content) {
+        box-sizing: border-box;
+        width: calc(100% - 40px);
+        margin: auto;
+
+        // 子页面默认 style
+        .page-content {
+          position: relative;
+          box-sizing: border-box;
+          padding: 20px;
+          overflow: hidden;
+          background: var(--default-box-color);
+          border-radius: calc(var(--custom-radius) / 2 + 2px) !important;
+        }
+      }
+    }
+
+    #app-footer {
+      flex-shrink: 0;
+      padding: 10px 20px 14px;
+      font-size: 12px;
+      text-align: center;
+
+      a {
+        color: var(--art-gray-500);
+        text-decoration: none;
+
+        &:hover {
+          color: var(--main-color);
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (width <= 800px) {
+  .app-layout {
+    position: relative;
+
+    #app-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 300;
+      height: 100vh;
+    }
+
+    #app-main {
+      width: 100%;
+      height: auto;
+      overflow: visible;
+
+      #app-content {
+        :deep(.layout-content) {
+          width: calc(100% - 40px);
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (width <= 640px) {
+  .app-layout {
+    #app-main {
+      #app-content {
+        :deep(.layout-content) {
+          width: calc(100% - 30px);
+        }
+      }
+    }
+  }
+}
