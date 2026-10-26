@@ -1,10 +1,15 @@
-# auth_pro
+# AR-Auth
 
-## 核心功能
+`AR-Auth` 是一个授权管理与反盗版后台系统，包含后台管理端、代理端、用户端和授权校验 API。项目采用前后端分离开发，生产环境可将前端产物内嵌到 Go 后端统一部署。
 
-- 公益开源交流群：169484041。
+- 仓库地址：https://github.com/iyiyus/AR-Auth
 
-`auth_pro` 是一个授权管理与反盗版后台系统，包含后台管理端、代理端、用户端和授权校验 API。项目采用前后端分离开发，生产环境可将前端产物内嵌到 Go 后端统一部署。
+## 快速开始
+
+```bash
+git clone https://github.com/iyiyus/AR-Auth.git
+cd AR-Auth
+```
 
 ## 核心功能
 
@@ -38,7 +43,7 @@
 ## 目录结构
 
 ```text
-auth_pro/
+AR-Auth/
 ├── backend/              # Go 后端服务
 │   ├── appstore/          # 应用商店兼容 BFF 模块
 │   ├── config/           # 配置读取与数据库配置持久化

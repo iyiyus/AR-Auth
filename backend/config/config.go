@@ -30,7 +30,7 @@ var (
 )
 
 // AppVersion 是当前系统整体版本号。前后端共用该版本，发布时通过 -ldflags 注入。
-var AppVersion = "1.0.0"
+var AppVersion = "1.1.3"
 
 // BuildTime 是二进制构建时间，发布时通过 -ldflags 注入。
 var BuildTime = ""
