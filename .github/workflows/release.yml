@@ -4,6 +4,11 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '要发布的标签，例如 v1.1.3'
+        required: true
 
 permissions:
   contents: write
@@ -11,6 +16,10 @@ permissions:
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
+
+env:
+  # 支持标签推送与手动触发：手动触发时使用输入的标签
+  RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
 
 jobs:
   release:
@@ -22,6 +31,7 @@ jobs:
       - name: Check out tagged source
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -30,8 +40,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! "$GITHUB_REF_NAME" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
-            echo "Tag must match vX.Y.Z: $GITHUB_REF_NAME" >&2
+          if [[ ! "$RELEASE_TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            echo "Tag must match vX.Y.Z: $RELEASE_TAG" >&2
             exit 1
           fi
           echo "value=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
@@ -65,23 +75,15 @@ jobs:
           mkdir -p release/packages
           curl --fail --silent --show-error --location \
             --proto '=https' --max-redirs 5 \
-            'https://github.com/cy70923167/auth_pro/releases/latest/download/releases.json' \
+            'https://github.com/iyiyus/AR-Auth/releases/latest/download/releases.json' \
             --output release/packages/releases.json || rm -f release/packages/releases.json
 
       - name: Build release package
         shell: bash
         env:
-          AUTO_PRO_UPDATE_PACKAGE_BASE_URL: 'https://github.com/cy70923167/auth_pro/releases/download/${{ github.ref_name }}'
-          AUTO_PRO_UPDATE_RELEASES_URL: 'https://github.com/cy70923167/auth_pro/releases/download/${{ github.ref_name }}/releases.json'
+          AUTO_PRO_UPDATE_PACKAGE_BASE_URL: 'https://github.com/iyiyus/AR-Auth/releases/download/${{ env.RELEASE_TAG }}'
+          AUTO_PRO_UPDATE_RELEASES_URL: 'https://github.com/iyiyus/AR-Auth/releases/download/${{ env.RELEASE_TAG }}/releases.json'
           AUTO_PRO_REQUIRE_GIT_RELEASE_NOTES: '1'
-          AUTO_PRO_RELEASE_NOTES: |
-            新增应用商店插件化
-            新增首页模版插件
-            修复管理员个人中心信息修改
-            修复管理员密码修改
-            新增域名/IP授权查询
-            新增广告展示模块
-            优化数据库连接池
         run: ./scripts/build-release.sh '${{ steps.version.outputs.value }}'
 
       - name: Run backend tests
@@ -137,11 +139,11 @@ jobs:
           VERSION: ${{ steps.version.outputs.value }}
         run: |
           set -euo pipefail
-          gh release create "$GITHUB_REF_NAME" \
+          gh release create "$RELEASE_TAG" \
             "release/packages/auth_pro-full-v${VERSION}.tar.gz" \
             release/packages/latest.json \
             release/packages/releases.json \
             --verify-tag \
             --latest \
             --generate-notes \
-            --title "$GITHUB_REF_NAME"
+            --title "$RELEASE_TAG"
